@@ -13,6 +13,10 @@ import ProductCategory from "./pages/products/ProductCategory";
 import CreateProduct from "./pages/products/CreateProduct";
 import AllProducts from "./pages/products/AllProducts";
 import SingleProduct from "./pages/products/SingleProduct";
+import CollectionManager from "./pages/Collections/CollectionManager";
+import CollectionProducts from "./pages/Collections/CollectionProducts";
+import HomepageCollections from "./pages/Collections/HomePageCollection";
+import RecommendedProducts from "./pages/products/RecommendedProducts";
 
 
 const App = () => {
@@ -33,10 +37,15 @@ const App = () => {
           <Route path="users/edit/:id" element={<EditUser />} />
 
           <Route path="productcategory" element={<ProductCategory />} />
-          <Route path="products/create" element={<CreateProduct/>}/>
-          <Route path="products" element={<AllProducts/>}/>
-          <Route path="products/edit/:id" element={<CreateProduct/>}/>
-          <Route path="products/:id" element={<SingleProduct/>}/>
+          <Route path="products/create" element={<CreateProduct />} />
+          <Route path="products" element={<AllProducts />} />
+          <Route path="products/edit/:id" element={<CreateProduct />} />
+          <Route path="products/:id" element={<SingleProduct />} />
+          <Route path="products/recommended" element={<RecommendedProducts />} />
+
+          <Route path="collections" element={<CollectionManager />} />
+          <Route path="collections/products/:collectionId" element={<CollectionProducts />} />
+          <Route path="collections/homepage" element={<HomepageCollections />} />
 
         </Route>
       </Route>

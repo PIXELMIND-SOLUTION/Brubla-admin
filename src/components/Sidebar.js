@@ -39,9 +39,20 @@ const navItems = [
             { to: "/dashboard/productcategory", label: "All Categories", icon: List },
             { to: "/dashboard/products/create", label: "Create Product", icon: PlusCircle },
             { to: "/dashboard/products", label: "All Products", icon: Eye },
+            { to: "/dashboard/products/recommended", label: "Recommended Products", icon: Star },
+        ],
+    },
+    {
+        to: "/dashboard/collections",
+        label: "Collections",
+        icon: BookMarked,
+        children: [
+            { to: "/dashboard/collections", label: "All Collections", icon: List },
+            { to: "/dashboard/collections/homepage", label: "Homepage Collections", icon: Star },
         ],
     },
 ];
+         
 
 // ── Dropdown ───────────────────────────────────────────────────────
 const DropdownItem = ({ to, item, setMobileOpen, collapsed }) => {

@@ -6,7 +6,6 @@ import {
   Plus,
   Edit,
   Trash2,
-  Eye,
   X,
   Check,
   FolderPlus,
@@ -19,7 +18,8 @@ import {
   Tag,
   Grid3x3,
   List,
-  AlertCircle
+  AlertCircle,
+  ChevronRight
 } from "lucide-react";
 
 const API = "http://31.97.228.17:4077/api/admin";
@@ -28,7 +28,7 @@ const ProductCategory = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState("grid"); // grid or list
+  const [viewMode, setViewMode] = useState("table"); // table or cards
   const [expandedCategories, setExpandedCategories] = useState({});
   
   // Category modal states
@@ -489,102 +489,223 @@ const ProductCategory = () => {
     category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Category Card Component
-  const CategoryCard = ({ category }) => {
-    const isExpanded = expandedCategories[category._id];
-    const subcategoryCount = category.subcategories?.length || 0;
-
-    return (
-      <div className="bg-[#071236]/50 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
-        {/* Category Header */}
-        <div className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors">
-          <div className="flex items-center gap-3 flex-1">
-            <button
-              onClick={() => toggleCategory(category._id)}
-              className="p-1 rounded-lg hover:bg-white/10 transition-colors"
-            >
-              {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-            </button>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C026D3] to-[#2563EB] flex items-center justify-center">
-              <FolderTree size={18} className="text-white" />
-            </div>
-            <div>
-              <h3 className="text-white font-semibold">{category.name}</h3>
-              <p className="text-xs text-[#94A3B8]">{subcategoryCount} subcategories</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${category.isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
-              {category.isActive ? 'Active' : 'Inactive'}
-            </span>
-            <button
-              onClick={() => openEditCategoryModal(category)}
-              className="p-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-all"
-            >
-              <Edit size={16} />
-            </button>
-            <button
-              onClick={() => openAddSubcategoryModal(category)}
-              className="p-2 rounded-lg bg-[#C026D3]/10 hover:bg-[#C026D3]/20 text-[#C026D3] transition-all"
-            >
-              <FolderPlus size={16} />
-            </button>
-            <button
-              onClick={() => handleDeleteCategory(category)}
-              className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all"
-            >
-              <Trash2 size={16} />
-            </button>
-          </div>
-        </div>
-
-        {/* Subcategories */}
-        {isExpanded && category.subcategories && category.subcategories.length > 0 && (
-          <div className="border-t border-white/10 p-4 bg-white/5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {category.subcategories.map((sub) => (
-                <div key={sub._id} className="bg-black/20 rounded-xl p-3 flex items-center justify-between group">
-                  <div className="flex items-center gap-3 flex-1">
-                    {sub.image ? (
-                      <img
-                        src={sub.image}
-                        alt={sub.name}
-                        className="w-10 h-10 rounded-lg object-cover"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                        <ImageIcon size={16} className="text-[#94A3B8]" />
+  // Table View Component
+  const TableView = () => (
+    <div className="bg-[#071236]/50 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-white/5 border-b border-white/10">
+            <tr>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">Category</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">Subcategories</th>
+              <th className="px-6 py-4 text-right text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/10">
+            {filteredCategories.map((category) => (
+              <>
+                <tr key={category._id} className="hover:bg-white/5 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => toggleCategory(category._id)}
+                        className="p-1 rounded-lg hover:bg-white/10 transition-colors"
+                      >
+                        {expandedCategories[category._id] ? <ChevronUp size={16} /> : <ChevronRight size={16} />}
+                      </button>
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C026D3] to-[#2563EB] flex items-center justify-center">
+                        <FolderTree size={14} className="text-white" />
                       </div>
-                    )}
-                    <div>
-                      <p className="text-white text-sm font-medium">{sub.name}</p>
-                      <span className={`text-xs ${sub.isActive ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {sub.isActive ? 'Active' : 'Inactive'}
-                      </span>
+                      <span className="text-white font-medium">{category.name}</span>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={() => openEditSubcategoryModal(category, sub)}
-                      className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-all"
-                    >
-                      <Edit size={14} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteSubcategory(category, sub)}
-                      className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${
+                      category.isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+                    }`}>
+                      {category.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-[#94A3B8] text-sm">{category.subcategories?.length || 0}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => openEditCategoryModal(category)}
+                        className="p-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-all"
+                      >
+                        <Edit size={16} />
+                      </button>
+                      <button
+                        onClick={() => openAddSubcategoryModal(category)}
+                        className="p-2 rounded-lg bg-[#C026D3]/10 hover:bg-[#C026D3]/20 text-[#C026D3] transition-all"
+                      >
+                        <FolderPlus size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteCategory(category)}
+                        className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                {expandedCategories[category._id] && category.subcategories && category.subcategories.length > 0 && (
+                  <tr className="bg-white/5">
+                    <td colSpan="4" className="px-6 py-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                        {category.subcategories.map((sub) => (
+                          <div key={sub._id} className="bg-black/20 rounded-xl p-3 flex items-center justify-between group">
+                            <div className="flex items-center gap-3 flex-1">
+                              {sub.image ? (
+                                <img
+                                  src={sub.image}
+                                  alt={sub.name}
+                                  className="w-10 h-10 rounded-lg object-cover"
+                                />
+                              ) : (
+                                <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                                  <ImageIcon size={16} className="text-[#94A3B8]" />
+                                </div>
+                              )}
+                              <div>
+                                <p className="text-white text-sm font-medium">{sub.name}</p>
+                                <span className={`text-xs ${sub.isActive ? 'text-emerald-400' : 'text-red-400'}`}>
+                                  {sub.isActive ? 'Active' : 'Inactive'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => openEditSubcategoryModal(category, sub)}
+                                className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-all"
+                              >
+                                <Edit size={14} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSubcategory(category, sub)}
+                                className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </>
+            ))}
+          </tbody>
+        </table>
       </div>
-    );
-  };
+    </div>
+  );
+
+  // Cards View Component
+  const CardsView = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {filteredCategories.map((category) => {
+        const isExpanded = expandedCategories[category._id];
+        const subcategoryCount = category.subcategories?.length || 0;
+        
+        return (
+          <div key={category._id} className="bg-[#071236]/50 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
+            {/* Category Header */}
+            <div className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors">
+              <div className="flex items-center gap-3 flex-1">
+                <button
+                  onClick={() => toggleCategory(category._id)}
+                  className="p-1 rounded-lg hover:bg-white/10 transition-colors"
+                >
+                  {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                </button>
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C026D3] to-[#2563EB] flex items-center justify-center">
+                  <FolderTree size={18} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold">{category.name}</h3>
+                  <p className="text-xs text-[#94A3B8]">{subcategoryCount} subcategories</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${category.isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                  {category.isActive ? 'Active' : 'Inactive'}
+                </span>
+                <button
+                  onClick={() => openEditCategoryModal(category)}
+                  className="p-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-all"
+                >
+                  <Edit size={16} />
+                </button>
+                <button
+                  onClick={() => openAddSubcategoryModal(category)}
+                  className="p-2 rounded-lg bg-[#C026D3]/10 hover:bg-[#C026D3]/20 text-[#C026D3] transition-all"
+                >
+                  <FolderPlus size={16} />
+                </button>
+                <button
+                  onClick={() => handleDeleteCategory(category)}
+                  className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+
+            {/* Subcategories */}
+            {isExpanded && category.subcategories && category.subcategories.length > 0 && (
+              <div className="border-t border-white/10 p-4 bg-white/5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {category.subcategories.map((sub) => (
+                    <div key={sub._id} className="bg-black/20 rounded-xl p-3 flex items-center justify-between group">
+                      <div className="flex items-center gap-3 flex-1">
+                        {sub.image ? (
+                          <img
+                            src={sub.image}
+                            alt={sub.name}
+                            className="w-10 h-10 rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                            <ImageIcon size={16} className="text-[#94A3B8]" />
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-white text-sm font-medium">{sub.name}</p>
+                          <span className={`text-xs ${sub.isActive ? 'text-emerald-400' : 'text-red-400'}`}>
+                            {sub.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => openEditSubcategoryModal(category, sub)}
+                          className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 transition-all"
+                        >
+                          <Edit size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSubcategory(category, sub)}
+                          className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -601,10 +722,13 @@ const ProductCategory = () => {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all"
+            onClick={() => setViewMode(viewMode === "table" ? "cards" : "table")}
+            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition-all flex items-center gap-2"
           >
-            {viewMode === "grid" ? <List size={18} /> : <Grid3x3 size={18} />}
+            {viewMode === "table" ? <Grid3x3 size={18} /> : <List size={18} />}
+            <span className="text-sm hidden sm:inline">
+              {viewMode === "table" ? "Cards View" : "Table View"}
+            </span>
           </button>
           <button
             onClick={fetchCategories}
@@ -675,7 +799,7 @@ const ProductCategory = () => {
         </div>
       </div>
 
-      {/* Categories List */}
+      {/* Categories View */}
       {loading ? (
         <div className="flex justify-center items-center py-20">
           <div className="w-8 h-8 border-2 border-[#C026D3] border-t-transparent rounded-full animate-spin" />
@@ -686,12 +810,10 @@ const ProductCategory = () => {
           <p className="text-white text-lg">No categories found</p>
           <p className="text-[#94A3B8] text-sm mt-2">Click "Add Category" to create your first category</p>
         </div>
+      ) : viewMode === "table" ? (
+        <TableView />
       ) : (
-        <div className="space-y-3">
-          {filteredCategories.map((category) => (
-            <CategoryCard key={category._id} category={category} />
-          ))}
-        </div>
+        <CardsView />
       )}
 
       {/* Category Modal */}
