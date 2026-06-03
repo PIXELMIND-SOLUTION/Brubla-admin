@@ -51,6 +51,7 @@ const RecommendedProducts = () => {
   const [itemsPerPage] = useState(10);
 
   const getToken = () => sessionStorage.getItem("adminToken");
+  
 
   // Fetch recommended products
   const fetchRecommendedProducts = async () => {
@@ -259,37 +260,42 @@ const RecommendedProducts = () => {
     }
   };
 
-  // Toggle product active status
-  const handleToggleProduct = async (recommendedId, productName, currentStatus) => {
+  const handleToggleProduct = async (
+    recommendedId,
+    productName,
+    currentStatus
+  ) => {
     try {
-      const token = getToken();
+
       const response = await axios.patch(
-        `${API}/recommended/${recommendedId}/toggle`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${API}/recommended/${recommendedId}/toggle`
       );
 
       if (response.data.success) {
         Swal.fire({
           title: "Updated!",
-          text: `${productName} is now ${!currentStatus ? 'active' : 'inactive'} on homepage`,
+          text: `${productName} is now ${!currentStatus ? "active" : "inactive"
+            } on homepage`,
           icon: "success",
           background: "#071236",
           color: "#FFFFFF",
           timer: 1500,
           showConfirmButton: false,
         });
+
         fetchRecommendedProducts();
       }
     } catch (error) {
-      console.error("Error toggling product:", error);
+      console.error(
+        "Toggle Error:",
+        error.response?.data || error
+      );
+
       Swal.fire({
         title: "Error!",
-        text: "Failed to update product status",
+        text:
+          error.response?.data?.message ||
+          "Failed to update product status",
         icon: "error",
         background: "#071236",
         color: "#FFFFFF",
@@ -380,8 +386,8 @@ const RecommendedProducts = () => {
               if (bulkMode) setSelectedProductIds([]);
             }}
             className={`p-2.5 rounded-xl transition-all ${bulkMode
-                ? 'bg-[#C026D3]/20 text-[#C026D3] border border-[#C026D3]/30'
-                : 'bg-white/5 hover:bg-white/10 text-white'
+              ? 'bg-[#C026D3]/20 text-[#C026D3] border border-[#C026D3]/30'
+              : 'bg-white/5 hover:bg-white/10 text-white'
               }`}
           >
             {bulkMode ? <X size={20} /> : <Check size={20} />}
@@ -470,7 +476,7 @@ const RecommendedProducts = () => {
         <div className="space-y-3">
           {recommendedProducts.map((item, index) => {
             const product = item.product;
-            
+
             if (!product) {
               return (
                 <div
@@ -503,11 +509,10 @@ const RecommendedProducts = () => {
             return (
               <div
                 key={item._id}
-                className={`bg-gradient-to-br from-[#071236] to-[#0a1445] rounded-2xl border transition-all duration-200 ${
-                  isSelected
+                className={`bg-gradient-to-br from-[#071236] to-[#0a1445] rounded-2xl border transition-all duration-200 ${isSelected
                     ? 'border-[#C026D3] bg-[#C026D3]/5'
                     : 'border-white/10 hover:border-[#C026D3]/30'
-                }`}
+                  }`}
               >
                 <div className="p-5">
                   <div className="flex items-start gap-4">
@@ -555,18 +560,16 @@ const RecommendedProducts = () => {
                               <Tag size={12} />
                               SKU: {product.variants?.[0]?.sku || 'N/A'}
                             </span>
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${
-                              product.isActive 
-                                ? 'bg-emerald-500/20 text-emerald-400' 
-                                : 'bg-red-500/20 text-red-400'
-                            }`}>
-                              {product.isActive ? 'Active' : 'Inactive'}
-                            </span>
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${
-                              item.isActive !== false
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${product.isActive
                                 ? 'bg-emerald-500/20 text-emerald-400'
                                 : 'bg-red-500/20 text-red-400'
-                            }`}>
+                              }`}>
+                              {product.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${item.isActive !== false
+                                ? 'bg-emerald-500/20 text-emerald-400'
+                                : 'bg-red-500/20 text-red-400'
+                              }`}>
                               {item.isActive !== false ? 'On Homepage' : 'Hidden'}
                             </span>
                             <span className="text-xs text-[#94A3B8] flex items-center gap-1">
@@ -596,11 +599,10 @@ const RecommendedProducts = () => {
                               {/* Toggle Button */}
                               <button
                                 onClick={() => handleToggleProduct(item._id, product.name, item.isActive)}
-                                className={`p-2 rounded-lg transition-all ${
-                                  item.isActive !== false
+                                className={`p-2 rounded-lg transition-all ${item.isActive !== false
                                     ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400'
                                     : 'bg-gray-500/10 hover:bg-gray-500/20 text-gray-400'
-                                }`}
+                                  }`}
                                 title={item.isActive !== false ? "Hide from homepage" : "Show on homepage"}
                               >
                                 {item.isActive !== false ? <Eye size={16} /> : <EyeOff size={16} />}
@@ -727,9 +729,8 @@ const RecommendedProducts = () => {
                   {filteredAvailableProducts.map((product) => (
                     <div
                       key={product._id}
-                      className={`bg-white/5 rounded-xl p-4 transition-all cursor-pointer hover:bg-white/10 ${
-                        selectedProductIds.includes(product._id) ? 'ring-2 ring-[#C026D3] bg-[#C026D3]/10' : ''
-                      }`}
+                      className={`bg-white/5 rounded-xl p-4 transition-all cursor-pointer hover:bg-white/10 ${selectedProductIds.includes(product._id) ? 'ring-2 ring-[#C026D3] bg-[#C026D3]/10' : ''
+                        }`}
                       onClick={() => toggleProductSelection(product._id)}
                     >
                       <div className="flex items-start gap-4">

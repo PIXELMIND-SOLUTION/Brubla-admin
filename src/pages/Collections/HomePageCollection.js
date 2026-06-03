@@ -427,7 +427,7 @@ const HomepageCollections = () => {
                                                         </div>
                                                     </div>
                                                     <button
-                                                        onClick={() => handleRemoveFromHomepage(item._id, "Invalid Collection")}
+                                                        onClick={() => handleRemoveFromHomepage(item.collectionId._id, "Invalid Collection")}
                                                         className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all"
                                                     >
                                                         <Trash2 size={16} />
@@ -527,7 +527,7 @@ const HomepageCollections = () => {
                                                                         </div>
 
                                                                         <button
-                                                                            onClick={() => handleRemoveFromHomepage(item._id, collection.title)}
+                                                                            onClick={() => handleRemoveFromHomepage(item.collectionId._id, collection.title)}
                                                                             className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all"
                                                                             title="Remove from homepage"
                                                                         >
