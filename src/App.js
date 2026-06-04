@@ -20,6 +20,7 @@ import RecommendedProducts from "./pages/products/RecommendedProducts";
 import LoginBanners from "./pages/Banners/LoginBanners";
 import HeroBanners from "./pages/Banners/HeroBanner";
 import AdBanners from "./pages/Banners/AdBanners";
+import LatestProducts from "./pages/products/LatestProducts";
 
 
 const App = () => {
@@ -45,6 +46,7 @@ const App = () => {
           <Route path="products/edit/:id" element={<CreateProduct />} />
           <Route path="products/:id" element={<SingleProduct />} />
           <Route path="products/recommended" element={<RecommendedProducts />} />
+          <Route path="products/latest" element={<LatestProducts />} />
 
           <Route path="collections" element={<CollectionManager />} />
           <Route path="collections/products/:collectionId" element={<CollectionProducts />} />

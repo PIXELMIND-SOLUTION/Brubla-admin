@@ -40,6 +40,7 @@ const navItems = [
             { to: "/dashboard/products/create", label: "Create Product", icon: PlusCircle },
             { to: "/dashboard/products", label: "All Products", icon: Eye },
             { to: "/dashboard/products/recommended", label: "Recommended Products", icon: Star },
+            { to: "/dashboard/products/latest", label: "Latest Products", icon: Leaf },
         ],
     },
     {
