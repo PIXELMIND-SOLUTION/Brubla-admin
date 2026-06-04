@@ -17,6 +17,9 @@ import CollectionManager from "./pages/Collections/CollectionManager";
 import CollectionProducts from "./pages/Collections/CollectionProducts";
 import HomepageCollections from "./pages/Collections/HomePageCollection";
 import RecommendedProducts from "./pages/products/RecommendedProducts";
+import LoginBanners from "./pages/Banners/LoginBanners";
+import HeroBanners from "./pages/Banners/HeroBanner";
+import AdBanners from "./pages/Banners/AdBanners";
 
 
 const App = () => {
@@ -46,6 +49,10 @@ const App = () => {
           <Route path="collections" element={<CollectionManager />} />
           <Route path="collections/products/:collectionId" element={<CollectionProducts />} />
           <Route path="collections/homepage" element={<HomepageCollections />} />
+
+          <Route path="login-banners" element={<LoginBanners />} /> 
+          <Route path="hero-banners" element={<HeroBanners />} />
+          <Route path="ad-banners" element={<AdBanners />} />
 
         </Route>
       </Route>

@@ -51,8 +51,19 @@ const navItems = [
             { to: "/dashboard/collections/homepage", label: "Homepage Collections", icon: Star },
         ],
     },
+    {
+        to: "/dashboard/login-banners",
+        label: "Banners",
+        icon: ImagesIcon,
+        children: [
+            { to: "/dashboard/login-banners", label: "Login  Banners", icon: List },
+            { to: "/dashboard/hero-banners", label: "Hero Banner", icon: PlusCircle },
+            { to: "/dashboard/ad-banners", label: "Ad Banners", icon: Eye },
+            // { to: "/dashboard/user-banners", label: "User Banners", icon: Star },
+        ],
+    },
 ];
-         
+
 
 // ── Dropdown ───────────────────────────────────────────────────────
 const DropdownItem = ({ to, item, setMobileOpen, collapsed }) => {
