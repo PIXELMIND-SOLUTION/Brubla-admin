@@ -35,7 +35,7 @@ import {
   Draggable
 } from "@hello-pangea/dnd";
 
-const API = "http://31.97.228.17:4077/api/admin";
+const API = "https://brublabackend.onrender.com/api/admin";
 
 const RecommendedProducts = () => {
   const [recommendedProducts, setRecommendedProducts] = useState([]);

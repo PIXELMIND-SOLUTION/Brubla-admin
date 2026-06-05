@@ -54,7 +54,7 @@ const Login = () => {
 
       // API Call
       const response = await axios.post(
-        "http://31.97.228.17:4077/api/admin/login",
+        "https://brublabackend.onrender.com/api/admin/login",
         {
           email: email,
           password: password,

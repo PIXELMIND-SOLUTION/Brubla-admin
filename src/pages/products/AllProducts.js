@@ -23,7 +23,7 @@ import {
   Star
 } from "lucide-react";
 
-const API = "http://31.97.228.17:4077/api/admin";
+const API = "https://brublabackend.onrender.com/api/admin";
 
 const AllProducts = () => {
   const navigate = useNavigate();
