@@ -22,7 +22,7 @@ import {
   Monitor
 } from "lucide-react";
 
-const API = "https://brublabackend.onrender.com/api";
+const API = "http://31.97.228.17:4077/api";
 
 const LoginBanners = () => {
   const [media, setMedia] = useState(null);

@@ -36,7 +36,7 @@ import {
 } from "@hello-pangea/dnd";
 import { BsYoutube } from "react-icons/bs";
 
-const API = "https://brublabackend.onrender.com/api/admin";
+const API = "http://31.97.228.17:4077/api/admin";
 
 const HeroBanners = () => {
     const [heroItems, setHeroItems] = useState([]);

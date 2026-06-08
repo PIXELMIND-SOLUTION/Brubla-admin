@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
 
-const API = "https://brublabackend.onrender.com/api/admin";
+const API = "http://31.97.228.17:4077/api/admin";
 
 const CollectionManager = () => {
     const [collections, setCollections] = useState([]);

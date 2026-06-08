@@ -22,7 +22,7 @@ import {
   ChevronRight
 } from "lucide-react";
 
-const API = "https://brublabackend.onrender.com/api/admin";
+const API = "http://31.97.228.17:4077/api/admin";
 
 const ProductCategory = () => {
   const [categories, setCategories] = useState([]);
