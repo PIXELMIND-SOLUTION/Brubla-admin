@@ -147,6 +147,10 @@ const AllProducts = () => {
               src={mainImage}
               alt={product.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "https://placehold.co/600x800/e5e7eb/64748b?text=No+Image";
+              }}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
@@ -386,7 +390,10 @@ const AllProducts = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       {product.mainImages?.[0] ? (
-                        <img src={product.mainImages[0]} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
+                        <img src={product.mainImages[0]} alt={product.name} onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://placehold.co/600x800/e5e7eb/64748b?text=No+Image";
+                        }} className="w-10 h-10 rounded-lg object-cover" />
                       ) : (
                         <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
                           <Package size={16} className="text-[#94A3B8]" />

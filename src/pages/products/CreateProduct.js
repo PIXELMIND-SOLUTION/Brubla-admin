@@ -83,8 +83,8 @@ const CreateProduct = () => {
         setFormData({
           name: product.name,
           description: product.description,
-          categoryId: product.categoryId._id || product.categoryId,
-          subcategoryId: product.subcategoryId,
+          categoryId: product.categoryId?._id || product.categoryId,
+          subcategoryId: product.subcategoryId?._id || product.subcategoryId,
           isActive: product.isActive,
           deliveryAddresses: product.deliveryAddresses || [],
           tags: product.tags || [],
@@ -204,15 +204,18 @@ const CreateProduct = () => {
       return;
     }
 
+    // Store images with the variant
+    const newVariant = {
+      color: currentVariant.color,
+      price: parseFloat(currentVariant.price),
+      discountPrice: currentVariant.discountPrice ? parseFloat(currentVariant.discountPrice) : null,
+      sizes: currentVariant.sizes,
+      images: variantImages // Store the File objects
+    };
+
     setFormData(prev => ({
       ...prev,
-      variants: [...prev.variants, {
-        color: currentVariant.color,
-        price: parseFloat(currentVariant.price),
-        discountPrice: currentVariant.discountPrice ? parseFloat(currentVariant.discountPrice) : null,
-        sizes: currentVariant.sizes,
-        images: variantImages
-      }]
+      variants: [...prev.variants, newVariant]
     }));
 
     // Reset variant form
@@ -250,24 +253,32 @@ const CreateProduct = () => {
     }
 
     const submitData = new FormData();
+    
+    // Basic fields
     submitData.append("name", formData.name);
-    submitData.append("description", formData.description);
+    submitData.append("description", formData.description || "");
     submitData.append("categoryId", formData.categoryId);
     if (formData.subcategoryId) submitData.append("subcategoryId", formData.subcategoryId);
     submitData.append("isActive", formData.isActive);
+    
+    // Arrays - send as JSON strings
     submitData.append("deliveryAddresses", JSON.stringify(formData.deliveryAddresses));
     submitData.append("tags", JSON.stringify(formData.tags));
     
-    // Handle variants with images
+    // Handle variants
     formData.variants.forEach((variant, vIndex) => {
+      // Prepare variant data without images first
       const variantData = {
         color: variant.color,
         price: variant.price,
         discountPrice: variant.discountPrice,
         sizes: variant.sizes
       };
+      
+      // Add variant as JSON string
       submitData.append(`variants`, JSON.stringify(variantData));
       
+      // Append images for this variant if they exist
       if (variant.images && variant.images.length > 0) {
         variant.images.forEach((image, iIndex) => {
           submitData.append(`variant_${vIndex}_images`, image);
@@ -278,10 +289,18 @@ const CreateProduct = () => {
     try {
       setLoading(true);
       const token = getToken();
+      
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+      
       const url = isEditMode ? `${API}/products/${id}` : `${API}/products`;
-      const method = isEditMode ? axios.put : axios.post;
+      const method = isEditMode ? "PUT" : "POST";
 
-      const response = await method(url, submitData, {
+      const response = await axios({
+        method: method,
+        url: url,
+        data: submitData,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -298,13 +317,15 @@ const CreateProduct = () => {
           timer: 1500,
           showConfirmButton: false,
         });
-        navigate("/dashboard/products");
+        setTimeout(() => {
+          navigate("/dashboard/products");
+        }, 1500);
       }
     } catch (error) {
       console.error("Error saving product:", error);
       Swal.fire({
         title: "Error!",
-        text: error.response?.data?.message || `Failed to ${isEditMode ? "update" : "create"} product`,
+        text: error.response?.data?.message || error.message || `Failed to ${isEditMode ? "update" : "create"} product`,
         icon: "error",
         background: "#071236",
         color: "#FFFFFF",
@@ -360,7 +381,7 @@ const CreateProduct = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#C026D3]/50 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#071236]/50 border border-white/10 text-white focus:outline-none focus:border-[#C026D3]/50 transition-all"
                 placeholder="Enter product name"
                 required
               />
@@ -373,7 +394,7 @@ const CreateProduct = () => {
                 name="categoryId"
                 value={formData.categoryId}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#C026D3]/50 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#071236]/50 border border-white/10 text-white focus:outline-none focus:border-[#C026D3]/50 transition-all"
                 required
               >
                 <option value="">Select Category</option>
@@ -390,7 +411,7 @@ const CreateProduct = () => {
                 name="subcategoryId"
                 value={formData.subcategoryId}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#C026D3]/50 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#071236]/50 border border-white/10 text-white focus:outline-none focus:border-[#C026D3]/50 transition-all"
               >
                 <option value="">Select Subcategory</option>
                 {subcategories.map(sub => (
@@ -591,9 +612,23 @@ const CreateProduct = () => {
                 className="w-full px-4 py-2.5 rounded-xl bg-black/20 border border-white/10 text-white file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#C026D3] file:text-white hover:file:bg-[#A020B0] cursor-pointer"
               />
               {variantImagePreviews.length > 0 && (
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-2 mt-2 flex-wrap">
                   {variantImagePreviews.map((preview, idx) => (
-                    <img key={idx} src={preview} alt={`Preview ${idx}`} className="w-16 h-16 rounded-lg object-cover" />
+                    <div key={idx} className="relative">
+                      <img src={preview} alt={`Preview ${idx}`} className="w-16 h-16 rounded-lg object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newPreviews = variantImagePreviews.filter((_, i) => i !== idx);
+                          const newImages = variantImages.filter((_, i) => i !== idx);
+                          setVariantImagePreviews(newPreviews);
+                          setVariantImages(newImages);
+                        }}
+                        className="absolute -top-1 -right-1 p-0.5 rounded-full bg-red-500 text-white hover:bg-red-600"
+                      >
+                        <X size={10} />
+                      </button>
+                    </div>
                   ))}
                 </div>
               )}
@@ -611,25 +646,41 @@ const CreateProduct = () => {
           {/* Existing Variants List */}
           {formData.variants.length > 0 && (
             <div className="space-y-3">
-              <h3 className="text-white font-semibold">Added Variants</h3>
+              <h3 className="text-white font-semibold">Added Variants ({formData.variants.length})</h3>
               {formData.variants.map((variant, index) => (
-                <div key={index} className="bg-white/5 rounded-xl p-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-white font-semibold">{variant.color}</p>
-                    <p className="text-[#94A3B8] text-sm">
-                      Price: ${variant.price} | Discount: ${variant.discountPrice || "N/A"}
-                    </p>
-                    <p className="text-[#94A3B8] text-sm">
-                      Sizes: {variant.sizes.map(s => `${s.size}(${s.stock})`).join(", ")}
-                    </p>
+                <div key={index} className="bg-white/5 rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <p className="text-white font-semibold text-lg">{variant.color}</p>
+                      <p className="text-[#94A3B8] text-sm">
+                        Price: ${variant.price} {variant.discountPrice && <span className="line-through ml-2">${variant.discountPrice}</span>}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeVariant(index)}
+                      className="p-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-all"
+                    >
+                      <Trash2 size={18} />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => removeVariant(index)}
-                    className="p-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-all"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                  <p className="text-[#94A3B8] text-sm">
+                    Sizes: {variant.sizes.map(s => `${s.size}(${s.stock})`).join(", ")}
+                  </p>
+                  {variant.images && variant.images.length > 0 && (
+                    <div className="flex gap-2 mt-2">
+                      {variant.images.map((img, imgIdx) => (
+                        img instanceof File ? (
+                          <img 
+                            key={imgIdx} 
+                            src={URL.createObjectURL(img)} 
+                            alt={`${variant.color} ${imgIdx}`} 
+                            className="w-12 h-12 rounded-lg object-cover"
+                          />
+                        ) : null
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

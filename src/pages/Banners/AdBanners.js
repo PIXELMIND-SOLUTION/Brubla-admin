@@ -301,9 +301,8 @@ const AdBanners = () => {
   const handleToggleActive = async (id, currentStatus) => {
     try {
       const token = getToken();
-      await axios.put(
-        `${API}/homepage/banner/${id}`,
-        { isActive: !currentStatus },
+      await axios.patch(
+        `${API}/homepage/banner/${id}/toggle`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
