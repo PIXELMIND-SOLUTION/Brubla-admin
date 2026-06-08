@@ -265,22 +265,22 @@ const CreateProduct = () => {
     submitData.append("deliveryAddresses", JSON.stringify(formData.deliveryAddresses));
     submitData.append("tags", JSON.stringify(formData.tags));
     
-    // Handle variants
+    // Prepare variants array without images for JSON
+    const variantsForJson = formData.variants.map(variant => ({
+      color: variant.color,
+      price: variant.price,
+      discountPrice: variant.discountPrice,
+      sizes: variant.sizes
+    }));
+    
+    // Send variants as a single JSON array (matching Postman format)
+    submitData.append("variants", JSON.stringify(variantsForJson));
+    
+    // Append images for each variant with correct indexing
     formData.variants.forEach((variant, vIndex) => {
-      // Prepare variant data without images first
-      const variantData = {
-        color: variant.color,
-        price: variant.price,
-        discountPrice: variant.discountPrice,
-        sizes: variant.sizes
-      };
-      
-      // Add variant as JSON string
-      submitData.append(`variants`, JSON.stringify(variantData));
-      
-      // Append images for this variant if they exist
       if (variant.images && variant.images.length > 0) {
         variant.images.forEach((image, iIndex) => {
+          // Use the format: variant_{variantIndex}_images
           submitData.append(`variant_${vIndex}_images`, image);
         });
       }
@@ -668,15 +668,16 @@ const CreateProduct = () => {
                     Sizes: {variant.sizes.map(s => `${s.size}(${s.stock})`).join(", ")}
                   </p>
                   {variant.images && variant.images.length > 0 && (
-                    <div className="flex gap-2 mt-2">
+                    <div className="flex gap-2 mt-2 flex-wrap">
                       {variant.images.map((img, imgIdx) => (
                         img instanceof File ? (
-                          <img 
-                            key={imgIdx} 
-                            src={URL.createObjectURL(img)} 
-                            alt={`${variant.color} ${imgIdx}`} 
-                            className="w-12 h-12 rounded-lg object-cover"
-                          />
+                          <div key={imgIdx} className="relative">
+                            <img 
+                              src={URL.createObjectURL(img)} 
+                              alt={`${variant.color} ${imgIdx}`} 
+                              className="w-12 h-12 rounded-lg object-cover"
+                            />
+                          </div>
                         ) : null
                       ))}
                     </div>
