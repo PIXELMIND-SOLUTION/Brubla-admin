@@ -21,6 +21,7 @@ import LoginBanners from "./pages/Banners/LoginBanners";
 import HeroBanners from "./pages/Banners/HeroBanner";
 import AdBanners from "./pages/Banners/AdBanners";
 import LatestProducts from "./pages/products/LatestProducts";
+import AdminUserWallet from "./pages/Users/AdminUserWallet";
 
 
 const App = () => {
@@ -39,6 +40,7 @@ const App = () => {
           <Route path="users" element={<AllUsers />} />
           <Route path="users/:id" element={<SingleUser />} />
           <Route path="users/edit/:id" element={<EditUser />} />
+          <Route path="users/wallet/:id" element={<AdminUserWallet />} />
 
           <Route path="productcategory" element={<ProductCategory />} />
           <Route path="products/create" element={<CreateProduct />} />

@@ -20,8 +20,10 @@ import {
     Shield,
     Star,
     MapPin,
-    ShoppingBag
+    ShoppingBag,
+    DollarSign
 } from "lucide-react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const API = "http://31.97.228.17:4077/api/admin";
 
@@ -35,6 +37,8 @@ const AllUsers = () => {
     const [roleFilter, setRoleFilter] = useState("all");
     const [verificationFilter, setVerificationFilter] = useState("all");
     const usersPerPage = 10;
+
+    const [showWallet, setShowWallet] = useState({});
 
     // Get token from sessionStorage
     const getToken = () => sessionStorage.getItem("adminToken");
@@ -307,6 +311,7 @@ const AllUsers = () => {
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">Contact</th>
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">Role</th>
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-4 text-left text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">Wallet</th>
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">Joined</th>
                                         <th className="px-6 py-4 text-right text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">Actions</th>
                                     </tr>
@@ -351,6 +356,28 @@ const AllUsers = () => {
                                                 )}
                                             </td>
                                             <td className="px-6 py-4">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border bg-green-50 text-green-700 border-green-200">
+                                                        ₹
+                                                        {showWallet[user._id]
+                                                            ? (user.wallet?.balance ?? 0)
+                                                            : "••••"}
+                                                    </span>
+
+                                                    <button
+                                                        onClick={() =>
+                                                            setShowWallet((prev) => ({
+                                                                ...prev,
+                                                                [user._id]: !prev[user._id],
+                                                            }))
+                                                        }
+                                                        className="text-gray-500 hover:text-gray-700"
+                                                    >
+                                                        {showWallet[user._id] ? <FaEyeSlash /> : <FaEye />}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2 text-[#94A3B8] text-xs">
                                                     <Calendar size={12} />
                                                     {new Date(user.createdAt).toLocaleDateString()}
@@ -358,6 +385,13 @@ const AllUsers = () => {
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
+                                                    <button
+                                                        onClick={() => navigate(`/dashboard/users/wallet/${user._id}`)}
+                                                        className="p-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 transition-all"
+                                                        title="View Wallet"
+                                                    >
+                                                        <DollarSign size={16} />
+                                                    </button>
                                                     <button
                                                         onClick={() => navigate(`/dashboard/users/${user._id}`)}
                                                         className="p-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 transition-all"
