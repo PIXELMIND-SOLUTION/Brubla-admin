@@ -449,14 +449,29 @@ const DesignerProducts = () => {
                                                 {!targetDesignerId && (
                                                     <td className="px-6 py-4">
                                                         {product.creator ? (
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#C026D3] to-[#2563EB] flex items-center justify-center text-white text-[10px] font-bold">
+                                                            <div className="flex items-start gap-3">
+                                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#C026D3] to-[#2563EB] flex items-center justify-center text-white text-xs font-bold shrink-0">
                                                                     {product.creator.name?.charAt(0).toUpperCase() || "D"}
                                                                 </div>
-                                                                <span className="text-white text-sm">{product.creator.name}</span>
+
+                                                                <div className="min-w-0">
+                                                                    <p className="text-white text-sm font-medium truncate">
+                                                                        {product.creator.name}
+                                                                    </p>
+
+                                                                    <p className="text-[#94A3B8] text-xs truncate">
+                                                                        {product.creator.email || "No email"}
+                                                                    </p>
+
+                                                                    <p className="text-[#94A3B8] text-xs">
+                                                                        {product.creator.mobile || "No mobile"}
+                                                                    </p>
+                                                                </div>
                                                             </div>
                                                         ) : (
-                                                            <span className="text-[#94A3B8] text-sm">Unknown</span>
+                                                            <span className="text-[#94A3B8] text-sm">
+                                                                Unknown
+                                                            </span>
                                                         )}
                                                     </td>
                                                 )}
