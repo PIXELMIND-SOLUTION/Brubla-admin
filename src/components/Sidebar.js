@@ -18,8 +18,9 @@ import {
 } from "lucide-react";
 import { BsGenderNeuter } from "react-icons/bs";
 import logo from "../assets/logo.png"
-import { FaPercentage } from "react-icons/fa";
+import { FaPercentage, FaShoppingBag } from "react-icons/fa";
 import Swal from "sweetalert2";
+import { PiEmpty } from "react-icons/pi";
 
 const navItems = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -50,6 +51,17 @@ const navItems = [
         children: [
             { to: "/dashboard/collections", label: "All Collections", icon: List },
             { to: "/dashboard/collections/homepage", label: "Homepage Collections", icon: Star },
+        ],
+    },
+    {
+        to: "/dashboard/designers",
+        label: "Designer",
+        icon: FaShoppingBag,
+        children: [
+            { to: "/dashboard/pending-designers", label: "Pending Designers", icon: PiEmpty },
+            { to: "/dashboard/designers", label: "All Designers", icon: List },
+            { to: "/dashboard/pending-designers-products    ", label: "Pending Designers Products", icon: PiEmpty },
+            { to: "/dashboard/designers-products", label: "All Designers Products", icon: List },
         ],
     },
     {
